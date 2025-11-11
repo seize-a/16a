@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>16A</title>
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="/16a/manifest.json">
 <meta name="theme-color" content="#0b8b8b">
-<link rel="icon" href="icons/icon-192x192.png" sizes="192x192">
-<link rel="apple-touch-icon" href="icons/icon-192x192.png">
+<link rel="icon" href="/16a/icons/icon-192x192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="/16a/icons/icon-192x192.png">
 <style>
   body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:2rem;gap:1rem;color:#222}
   header{margin-top:1rem}
@@ -29,7 +29,6 @@
 <main>
   <p>Scannez un QR ou ouvrez cette page depuis votre mobile pour tester l'ajout à l'écran d'accueil.</p>
 
-  <!-- Bouton visible pour déclencher l'installation (Android) -->
   <div>
     <button id="showInstall">Proposer l'installation</button>
     <a id="manualLink" class="linkbtn" href="#" style="display:none">Installer (si supporté)</a>
@@ -60,14 +59,12 @@
 </footer>
 
 <script>
-// Enregistre le service worker
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('service-worker.js').then(()=>{
-    console.log('Service Worker enregistré');
-  }).catch(e=>console.warn('SW erreur',e));
+  navigator.serviceWorker.register('/16a/service-worker.js')
+    .then(()=>console.log('Service Worker enregistré'))
+    .catch(e=>console.warn('Erreur SW',e));
 }
 
-// Gestion 'beforeinstallprompt' pour Android/Chrome
 let deferredPrompt;
 const overlay = document.getElementById('overlay');
 const popup = document.getElementById('installPopup');
@@ -80,7 +77,6 @@ const manualLink = document.getElementById('manualLink');
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  // affiche la popup automatiquement
   overlay.style.display = 'block';
   popup.style.display = 'block';
   manualInstructions.style.display = 'none';
@@ -88,12 +84,10 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 
 showInstall.addEventListener('click', async () => {
-  // si beforeinstallprompt disponible -> déclencher prompt
   if (deferredPrompt) {
     overlay.style.display = 'block';
     popup.style.display = 'block';
   } else {
-    // Pas de prompt (probablement iOS) : afficher instructions manuelles
     manualInstructions.style.display = 'block';
     manualLink.style.display = 'inline-block';
     manualLink.href = '#';
@@ -115,7 +109,6 @@ cancelBtn.addEventListener('click', () => {
   overlay.style.display = 'none';
 });
 
-// For iOS detection: show manual instructions link
 function isIos() {
   return /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
 }
@@ -124,15 +117,10 @@ function isInStandaloneMode() {
 }
 
 if (isIos() && !isInStandaloneMode()) {
-  // show instructions area
   manualInstructions.style.display = 'block';
   manualLink.style.display = 'inline-block';
   manualLink.addEventListener('click', (e)=>{ e.preventDefault(); manualInstructions.scrollIntoView({behavior:'smooth'}); });
 }
-
-// Add a visible clickable install link for Android/other that will try to open the prompt if available
-// It will also work as a friendly anchor for users to tap.
-document.getElementById('showInstall').style.display = 'inline-block';
 </script>
 </body>
 </html>
