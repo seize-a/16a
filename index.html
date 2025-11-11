@@ -1,87 +1,138 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mon Site PWA</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#2196f3">
-  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
-  <style>
-    body { font-family: sans-serif; text-align: center; margin-top: 50px; }
-    #installPopup {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      z-index: 1000;
-    }
-    #installPopup button {
-      padding: 10px 20px;
-      margin: 10px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      background-color: #2196f3;
-      color: white;
-      font-size: 16px;
-    }
-    #overlay {
-      display: none;
-      position: fixed;
-      top:0; left:0;
-      width:100%; height:100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 900;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>16A</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b8b8b">
+<link rel="icon" href="icons/icon-192x192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="icons/icon-192x192.png">
+<style>
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:2rem;gap:1rem;color:#222}
+  header{margin-top:1rem}
+  #installPopup{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.25);z-index:1000;max-width:90%;width:320px;text-align:center}
+  #overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:900}
+  button{background:#0b8b8b;color:#fff;border:none;padding:10px 14px;border-radius:8px;font-size:16px;cursor:pointer}
+  .muted{color:#666;font-size:0.95rem}
+  #manualInstructions{display:none;background:#fff;padding:14px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.12);max-width:700px}
+  footer{margin-top:2rem;font-size:0.9rem;color:#666}
+  a.linkbtn{display:inline-block;padding:10px 14px;background:#0b8b8b;color:#fff;border-radius:8px;text-decoration:none}
+</style>
 </head>
 <body>
-  <h1>Bienvenue sur ma PWA 🚀</h1>
-  <p>Ce site peut être ajouté à l’écran d’accueil.</p>
+<header>
+  <h1>16A</h1>
+  <p class="muted">Application web progressive — testez l'installation</p>
+</header>
 
-  <div id="overlay"></div>
-  <div id="installPopup">
-    <p>📱 Ajouter cette application à votre écran d'accueil ?</p>
-    <button id="installBtn">Oui</button>
-    <button id="cancelBtn">Non</button>
+<main>
+  <p>Scannez un QR ou ouvrez cette page depuis votre mobile pour tester l'ajout à l'écran d'accueil.</p>
+
+  <!-- Bouton visible pour déclencher l'installation (Android) -->
+  <div>
+    <button id="showInstall">Proposer l'installation</button>
+    <a id="manualLink" class="linkbtn" href="#" style="display:none">Installer (si supporté)</a>
   </div>
 
-  <script>
-    let deferredPrompt;
-    const installPopup = document.getElementById('installPopup');
-    const overlay = document.getElementById('overlay');
-    const installBtn = document.getElementById('installBtn');
-    const cancelBtn = document.getElementById('cancelBtn');
+  <div id="manualInstructions" aria-hidden="true">
+    <h3>Installation manuelle (iOS)</h3>
+    <ol>
+      <li>Touchez le bouton <strong>Partager</strong> dans Safari.</li>
+      <li>Sélectionnez <strong>Ajouter à l'écran d'accueil</strong>.</li>
+      <li>Confirmez, puis ouvrez l'icône sur votre écran d'accueil.</li>
+    </ol>
+    <p class="muted">Sur Android, utilisez le bouton "Proposer l'installation".</p>
+  </div>
+</main>
 
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js');
-    }
+<div id="overlay"></div>
+<div id="installPopup" role="dialog" aria-modal="true">
+  <p style="margin:0 0 12px">📱 Ajouter <strong>16A</strong> à votre écran d'accueil ?</p>
+  <div style="display:flex;gap:8px;justify-content:center">
+    <button id="installBtn">Oui, installer</button>
+    <button id="cancelBtn" style="background:#ccc;color:#111">Non</button>
+  </div>
+</div>
 
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      overlay.style.display = 'block';
-      installPopup.style.display = 'block';
-    });
+<footer>
+  <p class="muted">Si la pop-up n'apparaît pas automatiquement sur iPhone, suivez les instructions manuelles ci-dessus.</p>
+</footer>
 
-    installBtn.addEventListener('click', async () => {
-      installPopup.style.display = 'none';
-      overlay.style.display = 'none';
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      deferredPrompt = null;
-    });
+<script>
+// Enregistre le service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js').then(()=>{
+    console.log('Service Worker enregistré');
+  }).catch(e=>console.warn('SW erreur',e));
+}
 
-    cancelBtn.addEventListener('click', () => {
-      installPopup.style.display = 'none';
-      overlay.style.display = 'none';
-    });
-  </script>
+// Gestion 'beforeinstallprompt' pour Android/Chrome
+let deferredPrompt;
+const overlay = document.getElementById('overlay');
+const popup = document.getElementById('installPopup');
+const installBtn = document.getElementById('installBtn');
+const cancelBtn = document.getElementById('cancelBtn');
+const showInstall = document.getElementById('showInstall');
+const manualInstructions = document.getElementById('manualInstructions');
+const manualLink = document.getElementById('manualLink');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // affiche la popup automatiquement
+  overlay.style.display = 'block';
+  popup.style.display = 'block';
+  manualInstructions.style.display = 'none';
+  manualLink.style.display = 'none';
+});
+
+showInstall.addEventListener('click', async () => {
+  // si beforeinstallprompt disponible -> déclencher prompt
+  if (deferredPrompt) {
+    overlay.style.display = 'block';
+    popup.style.display = 'block';
+  } else {
+    // Pas de prompt (probablement iOS) : afficher instructions manuelles
+    manualInstructions.style.display = 'block';
+    manualLink.style.display = 'inline-block';
+    manualLink.href = '#';
+  }
+});
+
+installBtn.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  popup.style.display = 'none';
+  overlay.style.display = 'none';
+  deferredPrompt.prompt();
+  const choice = await deferredPrompt.userChoice;
+  console.log('User choice', choice);
+  deferredPrompt = null;
+});
+
+cancelBtn.addEventListener('click', () => {
+  popup.style.display = 'none';
+  overlay.style.display = 'none';
+});
+
+// For iOS detection: show manual instructions link
+function isIos() {
+  return /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+}
+function isInStandaloneMode() {
+  return ('standalone' in window.navigator) && window.navigator.standalone;
+}
+
+if (isIos() && !isInStandaloneMode()) {
+  // show instructions area
+  manualInstructions.style.display = 'block';
+  manualLink.style.display = 'inline-block';
+  manualLink.addEventListener('click', (e)=>{ e.preventDefault(); manualInstructions.scrollIntoView({behavior:'smooth'}); });
+}
+
+// Add a visible clickable install link for Android/other that will try to open the prompt if available
+// It will also work as a friendly anchor for users to tap.
+document.getElementById('showInstall').style.display = 'inline-block';
+</script>
 </body>
 </html>

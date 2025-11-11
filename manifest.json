@@ -1,20 +1,14 @@
+
 {
-  "name": "Mon Site PWA",
-  "short_name": "PWA Demo",
+  "name": "16A",
+  "short_name": "16A",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#2196f3",
+  "scope": "./",
+  "background_color": "#0b8b8b",
+  "theme_color": "#0b8b8b",
   "icons": [
-    {
-      "src": "icons/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icons/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
+    { "src": "icons/icon-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512x512.png", "sizes": "512x512", "type": "image/png" }
   ]
 }
