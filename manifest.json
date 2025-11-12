@@ -4,10 +4,19 @@
   "start_url": "/16a/",
   "scope": "/16a/",
   "display": "standalone",
-  "background_color": "#0b8b8b",
+  "background_color": "#ffffff",
   "theme_color": "#0b8b8b",
+  "description": "Application web 16A - test PWA",
   "icons": [
-    { "src": "/16a/icon-192x192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/16a/icon-512x512.png", "sizes": "512x512", "type": "image/png" }
+    {
+      "src": "icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ]
 }
