@@ -1,81 +1,109 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>16A</title>
-  <link rel="manifest" href="/16a/manifest.json">
+
+  <!-- Couleur du thème -->
   <meta name="theme-color" content="#0b8b8b">
-  <link rel="apple-touch-icon" href="/16a/icon-192x192.png">
+
+  <!-- Icône et manifeste -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192x192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icon-512x512.png">
+
+  <!-- Meta iOS pour plein écran -->
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="16A">
+
   <style>
-    body{font-family:system-ui; padding:2rem; color:#222}
-    #installPopup{display:none; position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); background:#fff; padding:18px; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,.25); z-index:1000}
-    #overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:900}
-    button{background:#0b8b8b; color:#fff; border:none; padding:10px 14px; border-radius:8px; cursor:pointer}
-    .muted{color:#666}
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      background: #f0f0f0;
+      color: #333;
+    }
+    header {
+      background: #0b8b8b;
+      color: white;
+      padding: 1rem;
+    }
+    main {
+      padding: 2rem;
+    }
+    button {
+      background: #0b8b8b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #086868;
+    }
+    footer {
+      margin-top: 2rem;
+      padding: 1rem;
+      font-size: 0.8rem;
+      color: #666;
+    }
   </style>
 </head>
+
 <body>
-  <h1>16A</h1>
-  <p class="muted">Ouvre cette page depuis ton mobile pour tester l'installation.</p>
+  <header>
+    <h1>Bienvenue sur 16A</h1>
+  </header>
 
-  <div id="overlay"></div>
-  <div id="installPopup" role="dialog" aria-modal="true">
-    <p>📱 Ajouter <strong>16A</strong> à votre écran d'accueil ?</p>
-    <div style="display:flex; gap:8px; justify-content:center">
-      <button id="installBtn">Oui, installer</button>
-      <button id="cancelBtn" style="background:#ccc; color:#111">Non</button>
-    </div>
-  </div>
-  <div id="manualInstructions" style="display:none; margin-top:1rem;">
-    <h3>Installation (iOS)</h3>
-    <ol>
-      <li>Tapez sur le bouton <strong>Partager</strong> dans Safari.</li>
-      <li>Sélectionnez <strong>Ajouter à l'écran d'accueil</strong>.</li>
-      <li>Confirmez.</li>
-    </ol>
-  </div>
+  <main>
+    <p>Application Progressive Web App — installez-moi sur votre écran d’accueil !</p>
+    <button id="install-btn" style="display:none;">📱 Installer l’application</button>
+  </main>
 
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/16a/service-worker.js')
-    .then(()=>console.log('SW enregistré'))
-    .catch(e=>console.warn('Erreur SW', e));
-}
+  <footer>
+    <small>© 2025 16A - Tous droits réservés</small>
+  </footer>
 
-let deferredPrompt;
-const overlay=document.getElementById('overlay');
-const popup=document.getElementById('installPopup');
-const installBtn=document.getElementById('installBtn');
-const cancelBtn=document.getElementById('cancelBtn');
-const manualInstructions=document.getElementById('manualInstructions');
+  <script>
+    // Enregistrement du service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('✅ Service worker enregistré'))
+        .catch(err => console.log('❌ Erreur SW :', err));
+    }
 
-window.addEventListener('beforeinstallprompt',(e)=>{
-  e.preventDefault();
-  deferredPrompt=e;
-  overlay.style.display='block';
-  popup.style.display='block';
-});
+    // Gestion de l'installation (Android + Chrome)
+    let deferredPrompt;
+    const installBtn = document.getElementById('install-btn');
 
-installBtn.addEventListener('click',async()=>{
-  if(!deferredPrompt)return;
-  popup.style.display='none';
-  overlay.style.display='none';
-  deferredPrompt.prompt();
-  await deferredPrompt.userChoice;
-  deferredPrompt=null;
-});
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'inline-block';
+    });
 
-cancelBtn.addEventListener('click',()=>{
-  popup.style.display='none';
-  overlay.style.display='none';
-});
+    installBtn.addEventListener('click', async () => {
+      installBtn.style.display = 'none';
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`Résultat : ${outcome}`);
+        deferredPrompt = null;
+      }
+    });
 
-function isIos(){return /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());}
-function isInStandaloneMode(){return('standalone'in window.navigator)&&window.navigator.standalone;}
-if(isIos()&&!isInStandaloneMode()){manualInstructions.style.display='block';}
-</script>
+    // Message d’installation iOS
+    if (navigator.userAgent.match(/iphone|ipad|ipod/i)) {
+      const iosPrompt = document.createElement('p');
+      iosPrompt.textContent = '👉 Sur iPhone : appuyez sur "Partager" puis "Ajouter à l’écran d’accueil"';
+      document.querySelector('main').appendChild(iosPrompt);
+    }
+  </script>
 </body>
 </html>
