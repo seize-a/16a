@@ -3,7 +3,7 @@
   "short_name": "16A",
   "start_url": "/16a/",
   "scope": "/",
-  "display": "standalone",
+  "display": "minimal-ui",
   "background_color": "#ffffff",
   "theme_color": "#0b8b8b",
   "description": "Application web 16A - test PWA",
