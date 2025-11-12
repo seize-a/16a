@@ -104,6 +104,11 @@
       iosPrompt.textContent = '👉 Sur iPhone : appuyez sur "Partager" puis "Ajouter à l’écran d’accueil"';
       document.querySelector('main').appendChild(iosPrompt);
     }
+   if (window.matchMedia('(display-mode: standalone)').matches) {
+    const messageDiv = document.getElementById('message');
+    messageDiv.innerText = "Bravo ! Page affichée depuis la PWA 🎉";
+}
+ 
   </script>
 </body>
 </html>
