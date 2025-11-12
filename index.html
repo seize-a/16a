@@ -1,126 +1,81 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>16A</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0b8b8b">
-<link rel="icon" href="/16a/icons/icon-192x192.png" sizes="192x192">
-<link rel="apple-touch-icon" href="/16a/icons/icon-192x192.png">
-<style>
-  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:2rem;gap:1rem;color:#222}
-  header{margin-top:1rem}
-  #installPopup{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.25);z-index:1000;max-width:90%;width:320px;text-align:center}
-  #overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:900}
-  button{background:#0b8b8b;color:#fff;border:none;padding:10px 14px;border-radius:8px;font-size:16px;cursor:pointer}
-  .muted{color:#666;font-size:0.95rem}
-  #manualInstructions{display:none;background:#fff;padding:14px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.12);max-width:700px}
-  footer{margin-top:2rem;font-size:0.9rem;color:#666}
-  a.linkbtn{display:inline-block;padding:10px 14px;background:#0b8b8b;color:#fff;border-radius:8px;text-decoration:none}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>16A</title>
+  <link rel="manifest" href="/16a/manifest.json">
+  <meta name="theme-color" content="#0b8b8b">
+  <link rel="apple-touch-icon" href="/16a/icon-192x192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <style>
+    body{font-family:system-ui; padding:2rem; color:#222}
+    #installPopup{display:none; position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); background:#fff; padding:18px; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,.25); z-index:1000}
+    #overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:900}
+    button{background:#0b8b8b; color:#fff; border:none; padding:10px 14px; border-radius:8px; cursor:pointer}
+    .muted{color:#666}
+  </style>
 </head>
 <body>
-<header>
   <h1>16A</h1>
-  <p class="muted">Application web progressive — testez l'installation</p>
-</header>
+  <p class="muted">Ouvre cette page depuis ton mobile pour tester l'installation.</p>
 
-<main>
-  <p>Scannez un QR ou ouvrez cette page depuis votre mobile pour tester l'ajout à l'écran d'accueil.</p>
-
-  <div>
-    <button id="showInstall">Proposer l'installation</button>
-    <a id="manualLink" class="linkbtn" href="#" style="display:none">Installer (si supporté)</a>
+  <div id="overlay"></div>
+  <div id="installPopup" role="dialog" aria-modal="true">
+    <p>📱 Ajouter <strong>16A</strong> à votre écran d'accueil ?</p>
+    <div style="display:flex; gap:8px; justify-content:center">
+      <button id="installBtn">Oui, installer</button>
+      <button id="cancelBtn" style="background:#ccc; color:#111">Non</button>
+    </div>
   </div>
-
-  <div id="manualInstructions" aria-hidden="true">
-    <h3>Installation manuelle (iOS)</h3>
+  <div id="manualInstructions" style="display:none; margin-top:1rem;">
+    <h3>Installation (iOS)</h3>
     <ol>
-      <li>Touchez le bouton <strong>Partager</strong> dans Safari.</li>
+      <li>Tapez sur le bouton <strong>Partager</strong> dans Safari.</li>
       <li>Sélectionnez <strong>Ajouter à l'écran d'accueil</strong>.</li>
-      <li>Confirmez, puis ouvrez l'icône sur votre écran d'accueil.</li>
+      <li>Confirmez.</li>
     </ol>
-    <p class="muted">Sur Android, utilisez le bouton "Proposer l'installation".</p>
   </div>
-</main>
-
-<div id="overlay"></div>
-<div id="installPopup" role="dialog" aria-modal="true">
-  <p style="margin:0 0 12px">📱 Ajouter <strong>16A</strong> à votre écran d'accueil ?</p>
-  <div style="display:flex;gap:8px;justify-content:center">
-    <button id="installBtn">Oui, installer</button>
-    <button id="cancelBtn" style="background:#ccc;color:#111">Non</button>
-  </div>
-</div>
-
-<footer>
-  <p class="muted">Si la pop-up n'apparaît pas automatiquement sur iPhone, suivez les instructions manuelles ci-dessus.</p>
-</footer>
 
 <script>
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/16a/service-worker.js')
-    .then(()=>console.log('Service Worker enregistré'))
-    .catch(e=>console.warn('Erreur SW',e));
+    .then(()=>console.log('SW enregistré'))
+    .catch(e=>console.warn('Erreur SW', e));
 }
 
 let deferredPrompt;
-const overlay = document.getElementById('overlay');
-const popup = document.getElementById('installPopup');
-const installBtn = document.getElementById('installBtn');
-const cancelBtn = document.getElementById('cancelBtn');
-const showInstall = document.getElementById('showInstall');
-const manualInstructions = document.getElementById('manualInstructions');
-const manualLink = document.getElementById('manualLink');
+const overlay=document.getElementById('overlay');
+const popup=document.getElementById('installPopup');
+const installBtn=document.getElementById('installBtn');
+const cancelBtn=document.getElementById('cancelBtn');
+const manualInstructions=document.getElementById('manualInstructions');
 
-window.addEventListener('beforeinstallprompt', (e) => {
+window.addEventListener('beforeinstallprompt',(e)=>{
   e.preventDefault();
-  deferredPrompt = e;
-  overlay.style.display = 'block';
-  popup.style.display = 'block';
-  manualInstructions.style.display = 'none';
-  manualLink.style.display = 'none';
+  deferredPrompt=e;
+  overlay.style.display='block';
+  popup.style.display='block';
 });
 
-showInstall.addEventListener('click', async () => {
-  if (deferredPrompt) {
-    overlay.style.display = 'block';
-    popup.style.display = 'block';
-  } else {
-    manualInstructions.style.display = 'block';
-    manualLink.style.display = 'inline-block';
-    manualLink.href = '#';
-  }
-});
-
-installBtn.addEventListener('click', async () => {
-  if (!deferredPrompt) return;
-  popup.style.display = 'none';
-  overlay.style.display = 'none';
+installBtn.addEventListener('click',async()=>{
+  if(!deferredPrompt)return;
+  popup.style.display='none';
+  overlay.style.display='none';
   deferredPrompt.prompt();
-  const choice = await deferredPrompt.userChoice;
-  console.log('User choice', choice);
-  deferredPrompt = null;
+  await deferredPrompt.userChoice;
+  deferredPrompt=null;
 });
 
-cancelBtn.addEventListener('click', () => {
-  popup.style.display = 'none';
-  overlay.style.display = 'none';
+cancelBtn.addEventListener('click',()=>{
+  popup.style.display='none';
+  overlay.style.display='none';
 });
 
-function isIos() {
-  return /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
-}
-function isInStandaloneMode() {
-  return ('standalone' in window.navigator) && window.navigator.standalone;
-}
-
-if (isIos() && !isInStandaloneMode()) {
-  manualInstructions.style.display = 'block';
-  manualLink.style.display = 'inline-block';
-  manualLink.addEventListener('click', (e)=>{ e.preventDefault(); manualInstructions.scrollIntoView({behavior:'smooth'}); });
-}
+function isIos(){return /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());}
+function isInStandaloneMode(){return('standalone'in window.navigator)&&window.navigator.standalone;}
+if(isIos()&&!isInStandaloneMode()){manualInstructions.style.display='block';}
 </script>
 </body>
 </html>
