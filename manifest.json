@@ -2,7 +2,7 @@
   "name": "16A",
   "short_name": "16A",
   "start_url": "/16a/",
-  "scope": "/16a/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0b8b8b",
