@@ -1,13 +1,9 @@
-<?php
-// Aucun traitement serveur nécessaire ici pour la détection du mode PWA
-// car ce mode est uniquement détectable côté client (JavaScript)
-?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>16A V2</title>
+  <title>16A</title>
 
   <!-- Couleur du thème -->
   <meta name="theme-color" content="#0b8b8b">
@@ -17,7 +13,7 @@
   <link rel="icon" href="icon-192x192.png" type="image/png">
   <link rel="apple-touch-icon" href="icon-512x512.png">
 
-  <!-- Meta iOS pour plein écran -->
+  <!-- Mode PWA iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="16A">
@@ -58,6 +54,19 @@
       color: #666;
     }
   </style>
+
+  <script>
+    // 🔥 Redirection si affiché depuis la PWA
+    document.addEventListener("DOMContentLoaded", () => {
+      const isStandalone =
+        window.matchMedia("(display-mode: standalone)").matches ||
+        window.navigator.standalone === true;
+
+      if (isStandalone) {
+        window.location.href = "http://16.a.free.fr";
+      }
+    });
+  </script>
 </head>
 
 <body>
@@ -75,24 +84,14 @@
   </footer>
 
   <script>
-    // ✅ Redirection automatique si affiché depuis la PWA (standalone)
-    function checkStandaloneRedirect() {
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-      if (isStandalone) {
-        console.log('📱 Mode standalone détecté → redirection vers http://16.a.free.fr');
-        window.location.href = 'http://16.a.free.fr';
-      }
-    }
-    window.addEventListener('DOMContentLoaded', checkStandaloneRedirect);
-
-    // Enregistrement du service worker
+    // 📌 Enregistrement du service worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js')
         .then(() => console.log('✅ Service worker enregistré'))
         .catch(err => console.log('❌ Erreur SW :', err));
     }
 
-    // Gestion de l'installation (Android + Chrome)
+    // 📌 Gestion installation Android / Chrome
     let deferredPrompt;
     const installBtn = document.getElementById('install-btn');
 
@@ -107,15 +106,16 @@
       if (deferredPrompt) {
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
-        console.log(`Résultat : ${outcome}`);
+        console.log("Résultat :", outcome);
         deferredPrompt = null;
       }
     });
 
-    // Message d’installation iOS
+    // 📌 Message spécial iOS
     if (navigator.userAgent.match(/iphone|ipad|ipod/i)) {
       const iosPrompt = document.createElement('p');
-      iosPrompt.textContent = '👉 Sur iPhone : appuyez sur "Partager" puis "Ajouter à l’écran d’accueil"';
+      iosPrompt.textContent =
+        "👉 Sur iPhone : appuyez sur le bouton 'Partager' puis 'Ajouter à l’écran d’accueil'";
       document.querySelector('main').appendChild(iosPrompt);
     }
   </script>
