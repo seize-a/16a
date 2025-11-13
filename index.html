@@ -35,6 +35,17 @@
     main {
       padding: 2rem;
     }
+    #message {
+      background: #d4f5d4;
+      color: #065c06;
+      border: 2px solid #0b8b8b;
+      border-radius: 10px;
+      padding: 1rem;
+      margin: 1.5rem auto;
+      max-width: 400px;
+      display: none; /* Caché par défaut */
+      font-weight: 600;
+    }
     button {
       background: #0b8b8b;
       color: white;
@@ -64,6 +75,9 @@
   <main>
     <p>Application Progressive Web App — installez-moi !</p>
     <button id="install-btn" style="display:none;">📱 Installer l’application</button>
+
+    <!-- ✅ Zone de message PWA -->
+    <div id="message"></div>
   </main>
 
   <footer>
@@ -104,11 +118,19 @@
       iosPrompt.textContent = '👉 Sur iPhone : appuyez sur "Partager" puis "Ajouter à l’écran d’accueil"';
       document.querySelector('main').appendChild(iosPrompt);
     }
-   if (window.matchMedia('(display-mode: standalone)').matches) {
-    const messageDiv = document.getElementById('message');
-    messageDiv.innerText = "Bravo ! Page affichée depuis la PWA 🎉";
-}
- 
+
+    // ✅ Détection du mode PWA (standalone)
+    function checkStandalone() {
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+      if (isStandalone) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.innerText = "🎉 Bravo ! Cette page est affichée depuis la PWA installée.";
+        messageDiv.style.display = 'block';
+      }
+    }
+
+    // Vérifie au chargement
+    window.addEventListener('DOMContentLoaded', checkStandalone);
   </script>
 </body>
 </html>
