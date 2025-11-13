@@ -1,3 +1,7 @@
+<?php
+// Aucun traitement serveur nécessaire ici pour la détection du mode PWA
+// car ce mode est uniquement détectable côté client (JavaScript)
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -35,17 +39,6 @@
     main {
       padding: 2rem;
     }
-    #message {
-      background: #d4f5d4;
-      color: #065c06;
-      border: 2px solid #0b8b8b;
-      border-radius: 10px;
-      padding: 1rem;
-      margin: 1.5rem auto;
-      max-width: 400px;
-      display: none; /* Caché par défaut */
-      font-weight: 600;
-    }
     button {
       background: #0b8b8b;
       color: white;
@@ -75,9 +68,6 @@
   <main>
     <p>Application Progressive Web App — installez-moi !</p>
     <button id="install-btn" style="display:none;">📱 Installer l’application</button>
-
-    <!-- ✅ Zone de message PWA -->
-    <div id="message"></div>
   </main>
 
   <footer>
@@ -85,6 +75,16 @@
   </footer>
 
   <script>
+    // ✅ Redirection automatique si affiché depuis la PWA (standalone)
+    function checkStandaloneRedirect() {
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+      if (isStandalone) {
+        console.log('📱 Mode standalone détecté → redirection vers http://16.a.free.fr');
+        window.location.href = 'http://16.a.free.fr';
+      }
+    }
+    window.addEventListener('DOMContentLoaded', checkStandaloneRedirect);
+
     // Enregistrement du service worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js')
@@ -118,19 +118,6 @@
       iosPrompt.textContent = '👉 Sur iPhone : appuyez sur "Partager" puis "Ajouter à l’écran d’accueil"';
       document.querySelector('main').appendChild(iosPrompt);
     }
-
-    // ✅ Détection du mode PWA (standalone)
-    function checkStandalone() {
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-      if (isStandalone) {
-        const messageDiv = document.getElementById('message');
-        messageDiv.innerText = "🎉 Bravo ! Cette page est affichée depuis la PWA installée.";
-        messageDiv.style.display = 'block';
-      }
-    }
-
-    // Vérifie au chargement
-    window.addEventListener('DOMContentLoaded', checkStandalone);
   </script>
 </body>
 </html>
